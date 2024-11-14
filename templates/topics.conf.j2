@@ -1,4 +1,4 @@
-{% for topic in sympa_topics %}
+{% for topic in sympa_topics | default([]) %}
 {{ topic.name }}
 title {{ topic.title | default(topic.name ) }}
 
