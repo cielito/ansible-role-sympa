@@ -115,6 +115,10 @@ alias_manager {{ sympa_config_alias_manager }}
 aliases_program {{ sympa_config_aliases_program }}
 {% endif %}
 
+{% if sympa_config_aliases_db_type is defined %}
+aliases_db_type {{ sympa_config_aliases_db_type }}
+{% endif %}
+
 {% if sympa_config_aliases_wrapper is defined %}
 aliases_wrapper {{ sympa_config_aliases_wrapper }}
 {% endif %}
