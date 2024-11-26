@@ -124,7 +124,7 @@
     owner: "{{ sympa_unix_user }}"
     group: "{{ sympa_unix_group }}"
     mode: 0640
-  # no_log: true
+  no_log: true
   when: sympa_installation_method != 'package' or ansible_os_family == 'RedHat'
   notify:
     - restart sympa
@@ -134,11 +134,8 @@
     - sympa
     - sympa-conf
 
-- debug:
-    msg: '{{ sympa_robots | default([]) | count > 0 }}'
-
 - name: Create configuration files for robots on request
-  include_tasks: robots.yml
+  import_tasks: robots.yml
   when: sympa_robots | default([]) | count > 0
   tags:
     - sympa
@@ -178,12 +175,6 @@
     - sympa-conf
     - sympa-edit-list
 
-- debug:
-    var: sympa_topics
-
-- debug:
-    msg: '{{ sympa_topics | count > 0 }}'
-
 - name: Create configuration file topics.conf
   template:
     src: topics.conf.j2
@@ -193,7 +184,7 @@
     mode: 0640
   when:
     - sympa_topics is defined
-    - sympa_topics | count > 0
+    - sympa_topics | count
   notify:
     - restart sympa
     - restart wwsympa
