@@ -60,7 +60,7 @@
 
 - name: Add Net::LDAP to features if LDAP auth is enabled
   set_fact:
-    sympa_cpanm_features: "{{ sympa_cpanm_features + ['Net::LDAP'] }}"
+    sympa_cpanm_features: "{{ sympa_cpanm_features + ['Net::LDAP'. 'IO::Socket::SSL'] }}"
   when: sympa_ldap_auth_enabled
   tags: sympaldap
 
