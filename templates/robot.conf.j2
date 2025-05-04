@@ -1,8 +1,31 @@
 # Robot configuration for {{ item.domain }}
 domain {{ item.domain }}
 
+# Robot's listmaster
+
+{% if item.listmaster is defined %}
+listmaster {% if item.listmaster is string %}{{ item.listmaster }}{% else %}{{ item.listmaster | join(',') }}{% endif %}
+{% else %}
+listmaster listmaster@{{ item.domain }}
+{% endif %}
+
 {% if sympa_web_fcgi_enabled %}
 # Web interface
 wwsympa_url {{ sympa_web_fcgi_protocol }}://{{ item.web_domain | default(item.domain) }}/{{ sympa_web_path }}
 cookie_domain {{ item.web_domain | default(item.domain) }}
 {% endif %}
+{% if item.config_title is defined %}
+title {{ item.config_title }}
+{% endif %}
+{% if item.config_favicon_url is defined %}
+favicon_url {{ item.config_favicon_url }}
+{% endif %}
+{% if item.config_logo_html_definition is defined %}
+logo_html_definition {{ item.config_logo_html_definition | replace('\n', ' ') }}
+{% endif %}
+{% if item.config_colors is defined %}
+## Colors
+{% for color in item.config_colors %}
+color_{{ loop.index - 1 }} {{ color }}
+{% endfor %}
+
