@@ -26,7 +26,7 @@ sympa_repository_url: https://github.com/sympa-community/sympa.git
 sympa_repository_version: main
 
 sympa_source_url: "https://github.com/sympa-community/sympa/releases/download/{{ sympa_source_version }}/sympa-{{ sympa_source_version}}.tar.gz"
-sympa_source_version: 6.2.72
+sympa_source_version: 6.2.76
 sympa_source_patches: []
 
 sympa_cpanm_program: /usr/bin/cpanm
@@ -46,7 +46,7 @@ sympa_config_create_list: "public_listmaster"
 sympa_config_alias_manager: Template
 sympa_config_etc: /etc/sympa
 sympa_config_lang: ""
-sympa_config_log_level: 0
+sympa_config_log_level: 1
 sympa_config_password_hash: "{% if ansible_os_family == 'Alpine' %}md5{% else %}bcrypt{% endif %}"
 sympa_config_password_case: sensitive
 sympa_config_process_archive: yes
@@ -71,7 +71,7 @@ sympa_syslog_rotations: 52
 sympa_email_exim_router_snippet: |
   # Sympa router for list aliases
   sympa_list_aliases:
-    debug_print = "R: sympa list aliases for $local_part@$domain"
+    debug_print = "R: sympa list aliases for $local_part_data@$domain_data"
     driver = redirect
     domains = {{ sympa_domain }}
     allow_fail
@@ -83,7 +83,7 @@ sympa_email_exim_router_snippet: |
 
   # Sympa generic aliases for "sympa" and "listmaster"
   sympa_queue_aliases:
-    debug_print = "R: sympa queue aliases for $local_part@$domain"
+    debug_print = "R: sympa queue aliases for $local_part_data@$domain_data"
     driver = accept
     domains = {{ sympa_domain }}
     local_parts = sympa : listmaster
@@ -92,7 +92,7 @@ sympa_email_exim_router_snippet: |
 
   # Sympa generic aliases for "bounce" and "abuse-feedback-report"
   sympa_bouncequeue_aliases:
-    debug_print = "R: sympa bouncequeue aliases for $local_part@$domain"
+    debug_print = "R: sympa bouncequeue aliases for $local_part_data@$domain_data"
     driver = accept
     domains = {{ sympa_domain }}
     local_parts = bounce : abuse-feedback-report
@@ -103,14 +103,14 @@ sympa_email_exim_transport_snippet: |
   # Sympa transport for queue program
   sympa_queue_transport:
     driver = pipe
-    command = {{ sympa_installation_directory }}/bin/queue ${local_part}\@$domain
+    command = {{ sympa_installation_directory }}/bin/queue ${local_part_data}\@$domain_data
     user = {{ sympa_unix_user }}
     group = {{ sympa_unix_group }}
 
   # Sympa transport for bouncequeue program
   sympa_bounce_queue_transport:
     driver = pipe
-    command = {{ sympa_installation_directory }}/bin/bouncequeue ${local_part}\@$domain
+    command = {{ sympa_installation_directory }}/bin/bouncequeue ${local_part_data}\@$domain_data
     user = {{ sympa_unix_user }}
     group = {{ sympa_unix_group }}
 
@@ -126,7 +126,7 @@ sympa_web_authentication: []
 
 sympa_web_fcgi_enabled: true
 sympa_web_fcgi_protocol: https
-sympa_web_fcgi_socket: "/run/wwsympa/wwsympa.socket"
+sympa_web_fcgi_socket: "/run/sympa/wwsympa.socket"
 sympa_web_path: sympa
 
 sympa_web_fcgi_instances: 5
