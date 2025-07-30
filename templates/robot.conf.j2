@@ -28,4 +28,4 @@ logo_html_definition {{ item.config_logo_html_definition | replace('\n', ' ') }}
 {% for color in item.config_colors %}
 color_{{ loop.index - 1 }} {{ color }}
 {% endfor %}
-
+{% endif %}
