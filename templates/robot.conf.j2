@@ -9,17 +9,24 @@ listmaster listmaster@{{ sympa_robot.domain }}
 {% endif %}
 
 {% if sympa_web_fcgi_enabled %}
+
 # Web interface
 wwsympa_url {{ sympa_web_fcgi_protocol }}://{{ sympa_robot.web_domain | default(sympa_robot.domain) }}/{{ sympa_web_path }}
 cookie_domain {{ sympa_robot.web_domain | default(sympa_robot.domain) }}
 {% endif %}
 
 {% for robot_param,value in sympa_robot.items() %}
-{% if robot_param != 'domain' and robot_param != 'listmaster' %}
-{% if value is mapping %}{{ robot_param }}{% for sub_el,val in sympa_robot.items() %}
-{{ robot_param }}.{{ sub_el }} {{ val }}
-{% endfor %}
-{% else %}
-{{ robot_param }} {{ value }}
-{% endif %} {% endif %}  
-{% endfor %}
+
+{%   if robot_param != 'domain' and robot_param != 'listmaster' %}
+
+{%     if value is mapping %}
+# {{     robot_param }} value(s)
+{%       for sub_el,val in value.items() -%}
+           {{ robot_param }}.{{ sub_el }} {{ val }}
+{%       endfor %}
+{%     else %}
+# {{     robot_param }} value
+{{      robot_param }} {{ value }}
+{%-   endif %}
+{%-  endif %}
+{%- endfor %}
