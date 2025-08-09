@@ -142,11 +142,11 @@
         - sympa
         - sympa-conf
         - sympa-robots
-  loop: "{{ sympa_robots | default([]) }}"
+  loop: "{{ sympa_robots }}"
   loop_control:
     loop_var: sympa_robot
   when: 
-    - sympa_robots | default([]) | count > 0
+    - sympa_robots | count > 0
     - sympa_robot.domain != sympa_domain
   tags:
     - sympa
