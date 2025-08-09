@@ -10,7 +10,7 @@
     group: "{{ sympa_unix_group }}"
     mode: 0755
 
-- name: Create list data directory for robots
+- name: Create list data directory for {{ sympa_robot.domain }} robot
   file:
     state: directory
     path: "{{ sympa_list_home_directory }}/{{ sympa_robot.domain }}"

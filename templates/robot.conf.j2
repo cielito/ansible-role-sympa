@@ -14,10 +14,12 @@ wwsympa_url {{ sympa_web_fcgi_protocol }}://{{ sympa_robot.web_domain | default(
 cookie_domain {{ sympa_robot.web_domain | default(sympa_robot.domain) }}
 {% endif %}
 
-{% for robot_parameter in sympa_web_authentication %}
-{% for key,var in sympa_robot.items() %}
-{% if key != 'domain' and key != 'listmaster' %}
-{{ key }} {{ var }}
-{% endif %}  
+{% for robot_param,value in sympa_robot.items() %}
+{% if robot_param != 'domain' and robot_param != 'listmaster' %}
+{% if value is mapping %}{{ robot_param }}{% for sub_el,val in sympa_robot.items() %}
+{{ robot_param }}.{{ sub_el }} {{ val }}
 {% endfor %}
+{% else %}
+{{ robot_param }} {{ value }}
+{% endif %} {% endif %}  
 {% endfor %}
