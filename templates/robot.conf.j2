@@ -8,14 +8,6 @@ listmaster {% if sympa_robot.listmaster is string %}{{ sympa_robot.listmaster }}
 listmaster listmaster@{{ sympa_robot_domain }}
 {% endif %}
 
-# Robot's listmaster
-
-{% if item.listmaster is defined %}
-listmaster {% if item.listmaster is string %}{{ item.listmaster }}{% else %}{{ item.listmaster | join(',') }}{% endif %}
-{% else %}
-listmaster listmaster@{{ item.domain }}
-{% endif %}
-
 {% if sympa_web_fcgi_enabled %}
 
 # Web interface
