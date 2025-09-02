@@ -133,12 +133,13 @@ sympa_soap_fcgi_protocol: https
 sympa_soap_fcgi_instances: 2
 
 sympa_ldap_auth_enabled: false
-sympa_ldap_auth_ssl: true
+sympa_ldap_auth_secure: true
 
 sympa_web_nginx_snippet: |
   location = / {
     return 301 /{{ sympa_web_path }};
   }
+
   location /{{ sympa_web_path }} {
     include fastcgi_params;
     fastcgi_pass  unix:{{ sympa_web_fcgi_socket }};
@@ -166,14 +167,14 @@ sympa_install_odbc_driver: false
 
 sympa_rsyslog_unix_user: "{{ sympa_unix_user }}"
 
-
 sympa_dkim_feature: false
 
-sympa_config_dkim_feature: '{{ sympa_dkim_feature  }}'
+sympa_config_dkim_feature: '{{ sympa_dkim_feature }}'
 
 sympa_dkim_add_signature_to:
   - robot
   - list
+
 sympa_dkim_private_key_path: /etc/ssl/dkim_private.key
 sympa_dkim_signature_apply_on:
   - md5_authenticated_messages

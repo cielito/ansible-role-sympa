@@ -368,9 +368,9 @@ Number of FCGI instances (default: 2)
 
 Whether authentication through LDAP is enabled. Defaults to `false`.
 
-#### *sympa_ldap_auth_ssl*
+#### *sympa_ldap_auth_secure*
 
-Whether authentication through LDAP uses SSL. Defaults to `true`.
+Whether authentication through LDAP is secure. Defaults to `true`.
 
 ## Dependencies
 
