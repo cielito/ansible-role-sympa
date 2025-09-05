@@ -156,8 +156,6 @@ dkim_feature {% if sympa_dkim_feature %}on{% else %}off{% endif %}
 ## "dkim_authenticated_messages", "editor_validated_messages".
 {% if sympa_dkim_signature_apply_on | length>0 %}
 dkim_signature_apply_on {{ sympa_dkim_signature_apply_on | join(',') }}
-{% else %}
-dkim_signature_apply_on none
 {% endif %}
 
 ## dkim_private_key_path
@@ -171,7 +169,6 @@ dkim_parameters.signer_domain	{{ sympa_dkim_signer_domain }}
 {% endif %}
 
 ## dkim_selector
-## The selector
 {% if sympa_dkim_selector is defined %}
 dkim_parameters.selector {{ sympa_dkim_selector }}
 {% endif %}

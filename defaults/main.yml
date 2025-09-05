@@ -176,8 +176,6 @@ sympa_dkim_add_signature_to:
   - list
 
 sympa_dkim_private_key_path: /etc/ssl/dkim_private.key
-sympa_dkim_signature_apply_on:
-  - md5_authenticated_messages
-  - smime_authenticated_messages
-  - dkim_authenticated_messages
-  - editor_validated_messages
+
+# sympa_dkim_signature_apply_on:
+#  - any
