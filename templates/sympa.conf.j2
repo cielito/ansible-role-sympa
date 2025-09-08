@@ -114,41 +114,36 @@ alias_manager {{ sympa_config_alias_manager }}
 {% if sympa_config_aliases_program is defined %}
 aliases_program {{ sympa_config_aliases_program }}
 {% endif %}
-
 {% if sympa_config_aliases_db_type is defined %}
+
 aliases_db_type {{ sympa_config_aliases_db_type }}
 {% endif %}
-
 {% if sympa_config_aliases_wrapper is defined %}
+
 aliases_wrapper {{ sympa_config_aliases_wrapper }}
 {% endif %}
+{% if sympa_config_max_size is defined %}
 
 ## Incoming email
-{% if sympa_config_max_size is defined %}
 max_size {{ sympa_config_max_size }}
 {% endif %}
+{% if sympa_config_merge_feature is defined %}
 
 ## Personalization
-{% if sympa_config_merge_feature is defined %}
 merge_feature {{ sympa_config_merge_feature | bool | ternary('on', 'off') }}
 {% endif %}
+{% if sympa_installation_method != 'package' %}
 
 # Archiving
-{% if sympa_installation_method != 'package' %}
 mhonarc /usr/local/bin/mhonarc
 {% endif %}
 process_archive {{ sympa_config_process_archive | bool | ternary('on', 'off') }}
-{% if sympa_config_extra_parameters is defined %}
-
-# Extra parameters
-{{ sympa_config_extra_parameters }}
-{% endif %}
 
 ## DKIM
 # adapted from stuvusIT/sympa repository on Github
 
 ## dkim_feature
-dkim_feature {% if sympa_dkim_feature %}on{% else %}off{% endif %}
+dkim_feature {{ sympa_dkim_feature | bool | ternary('on', 'off') }}
 
 ## dkim_add_signature_to
 ## Which service messages to be signed
@@ -157,26 +152,51 @@ dkim_feature {% if sympa_dkim_feature %}on{% else %}off{% endif %}
 dkim_add_signature_to {{ sympa_dkim_add_signature_to | join(',') }}
 {% endif %}
 
+{% if sympa_dkim_signature_apply_on | default([]) | length > 0 %}
 ## dkim_signature_apply_on
 ## Type of message that is added a DKIM signature before distribution to
 ## subscribers. Possible values are "none", "any" or a list of the following
 ## keywords: "md5_authenticated_messages", "smime_authenticated_messages",
 ## "dkim_authenticated_messages", "editor_validated_messages".
-{% if sympa_dkim_signature_apply_on is defined %}
 dkim_signature_apply_on {{ sympa_dkim_signature_apply_on | join(',') }}
+{% else %}
+# dkim_signature_apply_on defaults is: md5_authenticated_messages,smime_authenticated_messages,dkim_authenticated_messages,editor_validated_messages
 {% endif %}
 
 ## dkim_parameters.private_key_path
+{% if sympa_dkim_private_key_path is defined %}
 ## Location of the file where DKIM private key is stored
 dkim_parameters.private_key_path	{{ sympa_dkim_private_key_path }}
+{% endif %}
+{% if sympa_dkim_signer_domain is defined %}
 
 ## dkim_parameters.signer_domain
 ## The "d=" tag as defined in rfc 4871, default is virtual host domain name
-{% if sympa_dkim_signer_domain is defined %}
 dkim_parameters.signer_domain	{{ sympa_dkim_signer_domain }}
 {% endif %}
+{% if sympa_dkim_selector is defined %}
 
 ## dkim_parameters.selector
-{% if sympa_dkim_selector is defined %}
 dkim_parameters.selector {{ sympa_dkim_selector }}
 {% endif %}
+{% if sympa_config_extra_parameters is defined %}
+
+# Extra parameters
+{%   if sympa_config_extra_parameters is mapping %}
+{%     for sympa_param,value in sympa_config_extra_parameters.items() %}
+
+{%       if value is mapping %}
+# {{       sympa_param }} value(s)
+{%         for sub_el,val in value.items() -%}
+             {{ sympa_param }}.{{ sub_el }} {{ val }}
+{%         endfor %}
+{%       else %}
+# {{       sympa_param }} value
+{{         sympa_param }} {{ value }}
+{%-      endif %}
+{%-    endfor %}
+{%   else %}{# then sympa_config_extra_parameters is a multiline string - for backwards compatibility #}
+{{     sympa_config_extra_parameters }}
+{%   endif %}
+{% endif %}
+
