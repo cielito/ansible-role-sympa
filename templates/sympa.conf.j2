@@ -1,3 +1,7 @@
+{# Macro to accept multi-value parameters as comma separated string or yaml list #}
+{% macro sympa_string_or_list(sympa_param, sympa_param_value) -%}
+{{ sympa_param }} {% if sympa_param_value is iterable and sympa_param_value is not string and sympa_param_value is not mapping -%}{{ sympa_param_value | join(',') }}{% else %}{{ sympa_param_value }}{% endif %}
+{%- endmacro %}
 # Main domain
 
 domain {{ sympa_domain }}
@@ -5,7 +9,7 @@ domain {{ sympa_domain }}
 # Listmaster
 
 {% if sympa_listmaster is defined %}
-listmaster {% if sympa_listmaster is string %}{{ sympa_listmaster }}{% else %}{{ sympa_listmaster | join(',') }}{% endif %}
+{{ sympa_string_or_list('listmaster', sympa_listmaster) }}
 {% else %}
 listmaster listmaster@{{ sympa_domain }}
 {% endif %}
@@ -98,7 +102,7 @@ create_list {{ sympa_config_create_list }}
 lang {{ sympa_config_lang }}
 {% endif %}
 {% if sympa_config_supported_lang is defined %}
-supported_lang {% if sympa_config_supported_lang is string %}{{ sympa_config_supported_lang }}{% else %}{{ sympa_config_supported_lang | join(',') }}{% endif %}
+{{ sympa_string_or_list('supported_lang', sympa_config_supported_lang) }}
 {% endif %}
 
 # Email distribution settings
@@ -138,11 +142,6 @@ merge_feature {{ sympa_config_merge_feature | bool | ternary('on', 'off') }}
 mhonarc /usr/local/bin/mhonarc
 {% endif %}
 process_archive {{ sympa_config_process_archive | bool | ternary('on', 'off') }}
-{% if sympa_config_extra_parameters is defined %}
-
-# Extra parameters
-{{ sympa_config_extra_parameters }}
-{% endif %}
 
 ## DKIM
 # adapted from stuvusIT/sympa repository on Github
@@ -154,7 +153,7 @@ dkim_feature {{ sympa_dkim_feature | bool | ternary('on', 'off') }}
 ## Which service messages to be signed
 ## Inserts a DKIM signature to service messages in context of robot, list or both
 {% if sympa_dkim_add_signature_to is defined %}
-dkim_add_signature_to {% if sympa_dkim_add_signature_to is string %}{{ sympa_dkim_add_signature_to }}{% else %}{{ sympa_dkim_add_signature_to | join(',') }}{% endif %}
+{{ sympa_string_or_list('dkim_add_signature_to', sympa_dkim_add_signature_to) }}
 {% endif %}
 
 ## dkim_signature_apply_on
@@ -163,7 +162,7 @@ dkim_add_signature_to {% if sympa_dkim_add_signature_to is string %}{{ sympa_dki
 ## keywords: "md5_authenticated_messages", "smime_authenticated_messages",
 ## "dkim_authenticated_messages", "editor_validated_messages".
 {% if sympa_dkim_signature_apply_on | default([]) | length > 0 %}
-dkim_signature_apply_on {% if sympa_dkim_signature_apply_on is string %}{{ sympa_dkim_signature_apply_on }}{% else %}{{ sympa_dkim_signature_apply_on | join(',') }}{% endif %}
+{{ sympa_string_or_list('dkim_signature_apply_on', sympa_dkim_signature_apply_on) }}
 {% else %}
 # dkim_signature_apply_on defaults is: md5_authenticated_messages,smime_authenticated_messages,dkim_authenticated_messages,editor_validated_messages
 {% endif %}
@@ -183,4 +182,24 @@ dkim_parameters.signer_domain	{{ sympa_dkim_signer_domain }}
 ## dkim_parameters.selector
 {% if sympa_dkim_selector is defined %}
 dkim_parameters.selector {{ sympa_dkim_selector }}
+{% endif %}
+{% if sympa_config_extra_parameters is defined %}
+
+# Extra parameters
+{%   if sympa_config_extra_parameters is mapping %}
+{%     for sympa_param,value in sympa_config_extra_parameters.items() %}
+
+{%       if value is mapping %}
+# {{       sympa_param }} value(s)
+{%         for sub_el,val in value.items() -%}
+{{           sympa_string_or_list( sympa_param + '.' + sub_el, val ) }}
+{%         endfor %}
+{%       else %}
+# {{       sympa_param }} value
+{{         sympa_string_or_list( sympa_param, value ) }}
+{%-      endif %}
+{%-    endfor %}
+{%   else %}{# then sympa_config_extra_parameters is a multiline string - for backwards compatibility #}
+{{     sympa_config_extra_parameters }}
+{%   endif %}
 {% endif %}

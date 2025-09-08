@@ -120,6 +120,13 @@ If no value is provided, `listmaster` will be joined with a @ to the
 
 For example: *listmaster@lists.example.com*.
 
+### sympa.conf
+
+As *sympa_listmaster* described hereabove, several variables described hereafter set a parameter in *sympa.conf* configuration file. For [those parameters avaialable for *sympa.conf*](https://www.sympa.community/gpldoc/man/sympa_config.5.html) which have not (yet) a variable associated in this role, it proposes the composed variable *sympa_config_extra_parameters*, which can contain either:
+
+* for backwards compatibility: a multiline string, which is simply appended to *sympa.conf*,
+* a dict describing sympa parameters, similar to *sympa_robots* elements described hereafter.
+
 ### Sympa robots
 
 #### *sympa_robots*
