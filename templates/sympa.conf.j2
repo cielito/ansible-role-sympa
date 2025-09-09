@@ -1,11 +1,13 @@
+{# Macro to accept multi-value parameters as comma separated string or yaml list #}
+{% macro sympa_string_or_list(sympa_param, sympa_param_value) -%}
+{{ sympa_param }} {% if sympa_param_value is string %}{{ sympa_param_value }}{% else %}{{ sympa_param_value | join(',') }}{% endif %}
+{%- endmacro %}
 # Main domain
-
 domain {{ sympa_domain }}
 
 # Listmaster
-
 {% if sympa_listmaster is defined %}
-listmaster {% if sympa_listmaster is string %}{{ sympa_listmaster }}{% else %}{{ sympa_listmaster | join(',') }}{% endif %}
+{{ sympa_string_or_list('listmaster', sympa_listmaster) }}
 {% else %}
 listmaster listmaster@{{ sympa_domain }}
 {% endif %}
@@ -14,6 +16,7 @@ listmaster listmaster@{{ sympa_domain }}
 # Web interface
 wwsympa_url {{ sympa_web_fcgi_protocol }}://{{ sympa_web_domain | default(sympa_domain) }}/{{ sympa_web_path }}
 {% if sympa_config_title is defined %}
+
 title {{ sympa_config_title }}
 {% endif %}
 {% if sympa_config_favicon_url is defined %}
@@ -98,7 +101,7 @@ create_list {{ sympa_config_create_list }}
 lang {{ sympa_config_lang }}
 {% endif %}
 {% if sympa_config_supported_lang is defined %}
-supported_lang {% if sympa_config_supported_lang is string %}{{ sympa_config_supported_lang }}{% else %}{{ sympa_config_supported_lang | join(',') }}{% endif %}
+{{ sympa_string_or_list('supported_lang', sympa_config_supported_lang ) }}
 {% endif %}
 
 # Email distribution settings
@@ -149,7 +152,7 @@ dkim_feature {{ sympa_dkim_feature | bool | ternary('on', 'off') }}
 ## Which service messages to be signed
 ## Inserts a DKIM signature to service messages in context of robot, list or both
 {% if sympa_dkim_add_signature_to is defined %}
-dkim_add_signature_to {{ sympa_dkim_add_signature_to | join(',') }}
+{{ sympa_string_or_list('dkim_add_signature_to', sympa_dkim_add_signature_to ) }}
 {% endif %}
 
 {% if sympa_dkim_signature_apply_on | default([]) | length > 0 %}
@@ -158,11 +161,7 @@ dkim_add_signature_to {{ sympa_dkim_add_signature_to | join(',') }}
 ## subscribers. Possible values are "none", "any" or a list of the following
 ## keywords: "md5_authenticated_messages", "smime_authenticated_messages",
 ## "dkim_authenticated_messages", "editor_validated_messages".
-{%   if sympa_dkim_signature_apply_on is string %}
-dkim_signature_apply_on {{ sympa_dkim_signature_apply_on }}
-{%   else %}{# dkim_signature_apply_on is a list #}
-dkim_signature_apply_on {{ sympa_dkim_signature_apply_on | join(',') }}
-{%   endif %}
+{{ sympa_string_or_list('dkim_signature_apply_on', sympa_dkim_signature_apply_on ) }}
 {% else %}
 # dkim_signature_apply_on defaults is: md5_authenticated_messages,smime_authenticated_messages,dkim_authenticated_messages,editor_validated_messages
 {% endif %}
@@ -192,11 +191,11 @@ dkim_parameters.selector {{ sympa_dkim_selector }}
 {%       if value is mapping %}
 # {{       sympa_param }} value(s)
 {%         for sub_el,val in value.items() -%}
-             {{ sympa_param }}.{{ sub_el }} {{ val }}
+{{           sympa_string_or_list( sympa_param + '.' + sub_el, val ) }}
 {%         endfor %}
 {%       else %}
 # {{       sympa_param }} value
-{{         sympa_param }} {{ value }}
+{{         sympa_string_or_list( sympa_param, value ) }}
 {%-      endif %}
 {%-    endfor %}
 {%   else %}{# then sympa_config_extra_parameters is a multiline string - for backwards compatibility #}
