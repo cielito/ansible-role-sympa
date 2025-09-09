@@ -158,7 +158,11 @@ dkim_add_signature_to {{ sympa_dkim_add_signature_to | join(',') }}
 ## subscribers. Possible values are "none", "any" or a list of the following
 ## keywords: "md5_authenticated_messages", "smime_authenticated_messages",
 ## "dkim_authenticated_messages", "editor_validated_messages".
+{%   if sympa_dkim_signature_apply_on is string %}
+dkim_signature_apply_on {{ sympa_dkim_signature_apply_on }}
+{%   else %}{# dkim_signature_apply_on is a list #}
 dkim_signature_apply_on {{ sympa_dkim_signature_apply_on | join(',') }}
+{%   endif %}
 {% else %}
 # dkim_signature_apply_on defaults is: md5_authenticated_messages,smime_authenticated_messages,dkim_authenticated_messages,editor_validated_messages
 {% endif %}
@@ -199,4 +203,3 @@ dkim_parameters.selector {{ sympa_dkim_selector }}
 {{     sympa_config_extra_parameters }}
 {%   endif %}
 {% endif %}
-
