@@ -18,14 +18,6 @@
     group: "{{ sympa_unix_group }}"
     mode: 0755
 
-- name: Create archives' directory {{ sympa_robot_domain }} robot
-  file:
-    state: directory
-    path: "{{ sympa_installation_directory }}/arc/{{ sympa_robot_domain }}"
-    owner: "{{ sympa_unix_user }}"
-    group: "{{ sympa_unix_group }}"
-    mode: 0755
-
 - debug:
     var: "{{ item }}"
     verbosity: 2
