@@ -43,7 +43,7 @@
 - name: Ensure that patch binary is installed
   package:
     name: patch
-  when: sympa_source_patches | count
+  when: sympa_source_patches | count > 0
 
 - name: Apply patches
   patch:
