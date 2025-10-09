@@ -35,7 +35,7 @@
   become_user: "{{ sympa_unix_user }}"
   vars:
     ansible_ssh_pipelining: true  
-  when: sympa_installation_method != 'source' or sympa_source_patches | count
+  when: sympa_installation_method != 'source' or sympa_source_patches | count > 0
 
 - name: Add symlink for pod2man on Arch Linux
   file:
