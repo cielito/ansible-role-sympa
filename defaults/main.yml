@@ -132,10 +132,14 @@ sympa_soap_fcgi_enabled: false
 sympa_soap_fcgi_protocol: https
 sympa_soap_fcgi_instances: 2
 
+sympa_ldap_auth_enabled: false
+sympa_ldap_auth_secure: true
+
 sympa_web_nginx_snippet: |
   location = / {
     return 301 /{{ sympa_web_path }};
   }
+
   location /{{ sympa_web_path }} {
     include fastcgi_params;
     fastcgi_pass  unix:{{ sympa_web_fcgi_socket }};
@@ -156,6 +160,8 @@ sympa_soap_nginx_snippet: |
     include       /etc/nginx/fastcgi_params;
     fastcgi_pass  unix:/run/sympasoap/sympasoap.socket;
   }
+
+sympa_robots: {}
 
 sympa_install_odbc_driver: false
 

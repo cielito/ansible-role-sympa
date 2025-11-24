@@ -120,6 +120,54 @@ If no value is provided, `listmaster` will be joined with a @ to the
 
 For example: *listmaster@lists.example.com*.
 
+### sympa.conf
+
+As *sympa_listmaster* described hereabove, several variables described hereafter set a parameter in *sympa.conf* configuration file. For [those parameters avaialable for *sympa.conf*](https://www.sympa.community/gpldoc/man/sympa_config.5.html) which have not (yet) a variable associated in this role, it proposes the composed variable *sympa_config_extra_parameters*, which can contain either:
+
+* for backwards compatibility: a multiline string, which is simply appended to *sympa.conf*,
+* a dict describing sympa parameters, similar to *sympa_robots* elements described hereafter.
+
+### Sympa robots
+
+#### *sympa_robots*
+
+With *sympa_robots* the role defines and populates the `robots.conf` files of a multi-domains Sympa server.
+
+*sympa_robots* is a dict, where each key is the *domain* on which the robot operates (mail and web), and the value is a dict which defines the values of all the parameters of the robot. It may contain parameters such as `wwsympa_url`, `listmaster`, `title`, or any other [configuration parameter valid in a `robot.conf` file](https://www.sympa.community/gpldoc/man/sympa_config.5.html), with its associated value(s).
+
+*listmaster* can be defined as an ansible list of emails, or as a string of comma separated email addresses. Compound paramentes can be defined as sub-dicts. For instance:
+```
+sympa_robots:
+  lists.mydomain.tld:
+    listmaster: ...
+
+    archive:
+      web_access: public
+      mail_access: private
+```
+will render in the `lists.mydomain.tld/robot.conf` configuration file:
+```
+# Robot configuration for lists.mydomain.tld
+domain lists.mydomain.tld
+
+# Robot's listmaster
+listmaster ...
+
+# archive value(s)
+archive.web_access public
+archive.mail_access private
+```
+For backwards compatibility, *sympa_robots* can also be defined as a list of dicts where all items have a parameter *domain* defining the robot:
+```
+sympa_robots:
+  - domain: lists.mydomain.tld
+    listmaster: ...
+
+    archive:
+      web_access: public
+      mail_access: private
+```
+
 ### Installation
 
 You can pick from different installation methods through the
@@ -320,6 +368,16 @@ Protocol for SOAP URL. Defaults to `https`.
 #### *sympa_soap_fcgi_instances*
 
 Number of FCGI instances (default: 2)
+
+### LDAP
+
+#### *sympa_ldap_auth_enabled*
+
+Whether authentication through LDAP is enabled. Defaults to `false`.
+
+#### *sympa_ldap_auth_secure*
+
+Whether authentication through LDAP is secure. Defaults to `true`.
 
 ## Dependencies
 
