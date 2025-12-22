@@ -1,6 +1,6 @@
 {# Macro to accept multi-value parameters as comma separated string or yaml list #}
 {% macro sympa_string_or_list(sympa_param, sympa_param_value) -%}
-{{ sympa_param }} {% if sympa_param_value is string %}{{ sympa_param_value }}{% else %}{{ sympa_param_value | join(',') }}{% endif %}
+{{ sympa_param }} {% if sympa_param_value is iterable and sympa_param_value is not string and sympa_param_value is not mapping -%}{{ sympa_param_value | join(',') }}{% else %}{{ sympa_param_value }}{% endif %}
 {%- endmacro %}
 
 # Robot configuration for {{ sympa_robot_domain }}
