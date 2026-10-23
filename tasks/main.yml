@@ -28,9 +28,36 @@
   tags:
     - sympa
 
+- name: Check for the installed Sympa command
+  stat:
+    path: "{{ sympa_installation_directory }}/bin/sympa.pl"
+  register: sympa_installed_command
+  when: sympa_installation_method == 'source'
+  tags: always
+
+- name: Read the installed Sympa version
+  command: "{{ sympa_installation_directory }}/bin/sympa.pl version"
+  register: sympa_installed_version
+  changed_when: false
+  check_mode: false
+  when:
+    - sympa_installation_method == 'source'
+    - sympa_installed_command.stat.exists
+  tags: always
+
+- name: Decide whether to install the requested source version
+  set_fact:
+    sympa_source_install_required: >-
+      {{ not sympa_installed_command.stat.exists
+         or (sympa_installed_version.stdout | default('') | trim) != ('Sympa ' ~ sympa_source_version) }}
+  when: sympa_installation_method == 'source'
+  tags: always
+
 - name: Install prerequisites for compiling Sympa
   import_tasks: compile-prereqs.yml
-  when: sympa_installation_method != 'package'
+  when:
+    - sympa_installation_method != 'package'
+    - sympa_source_install_required if sympa_installation_method == 'source' else true
   tags:
     - sympa
 
@@ -75,13 +102,22 @@
 - name: Run tasks specific for installation method
   include_tasks:
     file: "{{ sympa_installation_method }}.yml"
-  when: sympa_installation_method != 'none'
+  when:
+    - sympa_installation_method != 'none'
+    - sympa_source_install_required if sympa_installation_method == 'source' else true
   tags:
     - sympa
 
+- name: Set variable for Sympa command
+  set_fact:
+    sympa_command: "{{ sympa_installation_directory }}/bin/sympa.pl"
+  when: sympa_installation_method not in ['none', 'package']
+
 - name: Configure, make and install Sympa
   import_tasks: config-make-install.yml
-  when: sympa_installation_method not in ['none', 'package']
+  when:
+    - sympa_installation_method not in ['none', 'package']
+    - sympa_source_install_required if sympa_installation_method == 'source' else true
   notify: restart sympa
 
 - name: Enable syslog
@@ -245,6 +281,7 @@
   when:
     - sympa_installation_method not in ['none', 'package']
     - sympa_data_version_file_results.stat.exists
+    - sympa_source_install_required if sympa_installation_method == 'source' else true
   tags:
     - sympa
 

@@ -69,6 +69,19 @@
   vars:
     ansible_ssh_pipelining: true
 
+- name: Stop services before installing a different source version
+  service:
+    name: "{{ item }}"
+    state: stopped
+  loop: >-
+    {{ (['wwsympa'] if sympa_web_fcgi_enabled | bool else [])
+       + (['sympasoap'] if sympa_soap_fcgi_enabled | bool else [])
+       + (sympa_services | reject('equalto', 'sympa') | list)
+       + ['sympa'] }}
+  when:
+    - sympa_installation_method == 'source'
+    - sympa_installed_command.stat.exists
+
 - name: Install Sympa
   command: make install
   args:
@@ -80,10 +93,6 @@
     - restart sympa
     - restart wwsympa
     - restart sympasoap
-
-- name: Set variable for Sympa command
-  set_fact:
-    sympa_command: "{{ sympa_installation_directory }}/bin/sympa.pl"
 
 - name: Ensure that /usr/local/bin exists (CentOS 8)
   file:

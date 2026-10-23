@@ -211,6 +211,14 @@ binaries are a security risk.
 
 Sympa version, defaults to *6.2.76*.
 
+For `source` installations, the role compares `sympa.pl version` with
+`sympa_source_version`. If they match, it skips downloading, compiling, installing
+and running `--upgrade`.
+
+When installing a different version, the role compiles first, stops the services
+managed by this role immediately before `make install`, and starts them again
+after configuration and data upgrade. First installations skip the stop task.
+
 ##### *sympa_source_url*
 
 Sympa download location. The default value includes *sympa_source_version*,
