@@ -45,6 +45,19 @@
     - sympa_installed_command.stat.exists
   tags: always
 
+- name: Prevent downgrading an existing source installation
+  assert:
+    that:
+      - sympa_source_version is version(sympa_current_version, '>=')
+    fail_msg: >-
+      Cannot downgrade Sympa from {{ sympa_current_version }} to {{ sympa_source_version }}.
+  vars:
+    sympa_current_version: "{{ sympa_installed_version.stdout | trim | regex_replace('^Sympa ', '') }}"
+  when:
+    - sympa_installation_method == 'source'
+    - sympa_installed_command.stat.exists
+  tags: always
+
 - name: Decide whether to install the requested source version
   set_fact:
     sympa_source_install_required: >-
